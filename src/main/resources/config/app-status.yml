@@ -1,0 +1,59 @@
+---
+# 20000-29999 common error codes within your business domain.
+# It is highly recommended to have your error code shared within your organization or your line of business.
+# In that case, all your services can share the same app-status.yml which in org default config
+
+# 90000-99999 customize error code that cannot be found in common range.
+# Only use this section if you cannot make your error code into 20000-29999 range on time.
+# In this case, you have to overwrite your app-status.yml per service.
+
+ERR20001:
+  statusCode: 400
+  code: ERR20001
+  message: INVALID_JSON_PAYLOAD
+  description: 'Invalid JSON Payload - %s'
+ERR20002:
+  statusCode: 400
+  code: ERR20002
+  message: INVALID_JSON_PAYLOAD
+  description: 'Invalid JSON Payload - %s'
+
+ERR20501:
+  statusCode: 501
+  code: ERR20501
+  message: NOT_IMPLEMENTED
+  description: This endpoint has not yet been implemented.
+
+ERR20404:
+  statusCode: 404
+  code: ERR20404
+  message: GENERIC_NOT_FOUND
+  description: '%s'
+ERR20405:
+  statusCode: 404
+  code: ERR20405
+  message: NOT_FOUND
+  description: Entity %s was not found.
+
+ERR20420:
+  statusCode: 400
+  code: ERR20420
+  message: INVALID_VIEW_PARAMETERS
+  description: 'Unable to execute view due to invalid parameters. Available parameters: [%s]'
+ERR20421:
+  statusCode: 500
+  code: ERR20421
+  message: BAD_SQL_VIEW
+  description: '%s'
+
+ERR20422:
+  statusCode: 500
+  code: ERR20422
+  message: FAILED_CREATING_PUBSUB_PUBLISHER
+  description: 'There was an error creating a Pubsub publisher - %s'
+ERR20423:
+  statusCode: 500
+  code: ERR20423
+  message: FAILED_CONTACTING_PUBSUB_API
+  description: 'There was an error contacting the Pubsub API - %s'
+

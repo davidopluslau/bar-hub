@@ -1,0 +1,248 @@
+openapi: 3.0.0
+info:
+  version: ${pom.version}
+  title: Bar Hub
+  description: >
+    Serve up Hub assets and record orders and payments.
+  contact:
+    name: David Lau
+    email: davidopluslau@gmail.com
+    url: https://github.com/davidopluslau/bar-hub
+
+paths:
+  #
+  # General / Documentation Paths
+  #
+  '/':
+    get:
+      summary: Not implemented
+      tags:
+      - documentation
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html:
+              schema:
+                type: string
+
+
+  '/spec.html':
+    get:
+      summary: Bar Hub Documentation.
+      tags:
+      - documentation
+      responses:
+        '200':
+          description: OK
+          content:
+            text/html:
+              schema:
+                type: string
+
+  '/spec.yaml':
+    get:
+      summary: The OpenAPI Spec in YAML format.
+      tags:
+      - documentation
+      responses:
+        '200':
+          description: OK
+          content:
+            text/yaml:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  '/spec.json':
+    get:
+      summary: The OpenAPI Spec in JSON format.
+      tags:
+      - documentation
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  #
+  # Drink Paths
+  #
+  '/drink':
+    get:
+      summary: List all drinks for the current menu version.
+      tags:
+      - drink
+      parameters:
+      - in: query
+        name: page
+        description: page number starting with 1
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - in: query
+        name: page_size
+        description: the number of results per page. Default 10.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: A paged array of Teams
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DrinkList'
+              example:
+              - name: 'No More Doors'
+                version: '1.0.0'
+                cost: 3.14
+                alcohol: 30
+                blurb: 'I am a blurb'
+                is_pour: false
+              - name: 'Grand Ruins'
+                version: '1.0.0'
+                cost: 3.50
+                alcohol: 32
+                blurb: 'I am another blurb'
+                is_pour: false
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  '/drink/{gid}':
+    get:
+      summary: Info for a specific Team.
+      tags:
+      - drink
+      parameters:
+      - name: gid
+        in: path
+        required: true
+        description: Drink name
+        schema:
+        - type: string
+      responses:
+        '200':
+          description: Expected response to a valid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Drink'
+              example:
+                name: 'Grand Ruins'
+                version: '1.0.0'
+                cost: 3.50
+                alcohol: 32
+                blurb: 'I am another blurb'
+                is_pour: false
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+
+  schemas:
+    Error:
+      required:
+      - code
+      - message
+      properties:
+        message:
+          type: string
+        code:
+          type: integer
+          format: int32
+
+    List:
+      description: A list of results
+      type: object
+      properties:
+        info:
+          type: object
+          properties:
+            page:
+              type: integer
+              format: int32
+              minimum: 1
+            page_size:
+              type: integer
+              format: int32
+              minimum: 1
+              maximum: 500
+            count:
+              type: integer
+              format: int64
+            total_count:
+              type: integer
+              format: int64
+            total_pages:
+              type: integer
+              format: int64
+
+    #
+    # Drink Entity
+    #
+    DrinkList:
+      allOf:
+      - $ref: '#/components/schemas/List'
+      - type: object
+        description: A list of Drink
+        properties:
+          results:
+            type: array
+            items:
+              $ref: '#/components/schemas/Drink'
+
+    Drink:
+      required:
+      - name
+      - version
+      - cost
+      - alcohol
+      - blurb
+      - is_pour
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        cost:
+          type: float
+        alcohol:
+          type: integer
+          format: int64
+        blurb:
+          type: string
+        is_pour:
+          type: boolean
+          format: int6
+    #        drink_components:
+    #          type: array
+    #          items:
+    #            $ref: '#/components/schemas/DrinkComponent'
+

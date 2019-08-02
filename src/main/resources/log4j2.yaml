@@ -1,0 +1,51 @@
+---
+Configuration:
+  status: warn
+  Appenders:
+    Console:
+      - name: Stdout
+        target: SYSTEM_OUT
+        PatternLayout:
+          pattern: "%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%thread] %X{sId} %X{cId} %-5level %logger{36} %M - %msg%n"
+      - name: StdoutJSON
+        target: SYSTEM_OUT
+        JsonLayout:
+          complete: false
+          compact: true
+          eventEol: true
+
+  Loggers:
+    Root:
+      level: ERROR
+      AppenderRef:
+        ref: Stdout
+    Logger:
+      - name: com.davidopluslau.barhub
+        level: debug
+        additivity: false
+        AppenderRef:
+          ref: Stdout
+
+      - name: org.jooq
+        level: error
+        additivity: false
+        AppenderRef:
+          ref: Stdout
+
+      - name: org.jooq.Constants
+        level: error
+        additivity: false
+        AppenderRef:
+          ref: Stdout
+
+      - name: com.networknt
+        level: info
+        additivity: false
+        AppenderRef:
+          ref: Stdout
+
+      - name: Audit
+        level: info
+        additivity: false
+        AppenderRef:
+          ref: Stdout

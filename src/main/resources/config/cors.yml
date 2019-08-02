@@ -1,0 +1,20 @@
+description: Cors Http Handler
+# If cors handler is enabled or not
+enabled: true
+# Allowed origins, you can have multiple and with port if port is not 80 or 443
+# Wildcard is not supported for security reasons.
+allowedOrigins:
+
+# local dev
+- 'http://localhost:3000'
+- 'http://localhost:4000'
+- 'http://localhost:5000'
+- 'http://0.0.0.0:3000'
+- 'http://0.0.0.0:4000'
+- 'http://0.0.0.0:5000'
+# Allowed methods list.
+allowedMethods:
+- HEAD
+- GET
+- POST
+- PUT
