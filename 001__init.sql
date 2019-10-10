@@ -13,7 +13,7 @@ CREATE TABLE drink
     "name"    text          NOT NULL,
     "version" text          NOT NULL,
     "cost"    numeric(6, 2) NOT NULL,
-    "alcohol" int           NOT NULL,
+    "alcohol" numeric(6, 2) NOT NULL,
     "blurb"   text          NOT NULL,
     "is_pour" boolean       NOT NULL,
     PRIMARY KEY ("name", "version")
@@ -100,7 +100,7 @@ ALTER TABLE order_drink
     ADD CONSTRAINT "order_drinks__menu_version_fk" FOREIGN KEY ("menu_version") REFERENCES menu ("version") ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT "order_drinks__drink_name__drinks_version_fk" FOREIGN KEY ("drink_name", "drink_version") REFERENCES drink ("name", "version") ON DELETE CASCADE ON UPDATE CASCADE;
 
-CREATE TYPE unit_type AS enum ('mL', 'g', 'oz');
+CREATE TYPE unit_type AS enum ('mL', 'g', 'oz', 'dash', 'dashes');
 
 CREATE TABLE component
 (
@@ -112,6 +112,7 @@ CREATE TABLE component
     "unit_cost"            numeric(7, 4) NOT NULL,
     "alcohol_percentage"   numeric(4, 2) NOT NULL,
     "tax_multiplier"       numeric(9, 7) NOT NULL,
+    "is_pour"              boolean       NOT NULL,
     "site"                 text DEFAULT NULL,
     "notes"                text DEFAULT NULL
 ) WITHOUT OIDS;

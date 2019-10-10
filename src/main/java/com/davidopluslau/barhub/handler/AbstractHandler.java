@@ -36,12 +36,6 @@ public abstract class AbstractHandler {
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
         .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        .addMixIn(Report.class, ReportMixIn.class)
-//        .addMixIn(ReportAuthor.class, ReportAuthorMixIn.class)
-//        .addMixIn(ReportReviewer.class, ReportReviewerMixIn.class)
-//        .addMixIn(Insight.class, InsightMixIn.class)
-//        .addMixIn(Reference.class, ReferenceMixIn.class)
-//        .addMixIn(Tag.class, TagMixIn.class);
   }
 
   protected AbstractHandler() {
