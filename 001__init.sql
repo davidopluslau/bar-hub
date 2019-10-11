@@ -100,7 +100,7 @@ ALTER TABLE order_drink
     ADD CONSTRAINT "order_drinks__menu_version_fk" FOREIGN KEY ("menu_version") REFERENCES menu ("version") ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT "order_drinks__drink_name__drinks_version_fk" FOREIGN KEY ("drink_name", "drink_version") REFERENCES drink ("name", "version") ON DELETE CASCADE ON UPDATE CASCADE;
 
-CREATE TYPE unit_type AS enum ('mL', 'g', 'oz', 'dash', 'dashes');
+CREATE TYPE unit_type AS enum ('mL', 'g', 'oz', 'dash', 'dashes', 'barspoon');
 
 CREATE TABLE component
 (
