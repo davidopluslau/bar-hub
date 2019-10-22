@@ -1,6 +1,5 @@
 package com.davidopluslau.barhub.handler;
 
-import com.davidopluslau.barhub.handler.DrinkHandlers.GetMenuDrinks;
 import com.networknt.config.Config;
 import com.networknt.handler.HandlerProvider;
 import com.networknt.status.Status;
@@ -21,8 +20,10 @@ public class ApiHandlerProvider implements HandlerProvider {
 
     return Handlers.routing()
         // Drink
-        .add(Methods.GET, "/drink", new GetMenuDrinks())
+        .add(Methods.GET, "/drink", new DrinkHandlers.GetMenuDrinks())
         .add(Methods.GET, "/drink/{id}", new DrinkHandlers.GetCurrent())
+        .add(Methods.GET, "/component", new ComponentHandlers.GetAll())
+        .add(Methods.POST, "/component", new ComponentHandlers.Insert())
         ;
   }
 

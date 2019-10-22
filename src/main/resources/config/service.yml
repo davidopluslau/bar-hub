@@ -85,8 +85,9 @@ singletons:
   - com.networknt.cors.CorsHttpHandler
   # Correlation Create correlationId if it doesn't exist in the request header and put it into the request header
   - com.networknt.correlation.CorrelationHandler
-  # Parsing OpenAPI 3.0 specification based on request uri and method.
-  - com.networknt.openapi.OpenApiHandler
+# This really slows down development, re-enable to enforce openapi.yaml specified on every route
+#   Parsing OpenAPI 3.0 specification based on request uri and method.
+#  - com.networknt.openapi.OpenApiHandler
   # Security JWT token verification and scope verification (depending on OpenApiHandler)
   - com.networknt.openapi.JwtVerifyHandler
   # Body Parse body based on content type in the header.

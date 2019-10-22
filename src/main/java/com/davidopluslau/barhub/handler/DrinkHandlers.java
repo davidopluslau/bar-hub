@@ -15,14 +15,14 @@ import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import java.util.List;
 
-public class DrinkHandlers {
+class DrinkHandlers {
 
   private DrinkHandlers() {
   }
 
   public static class GetMenuDrinks extends AbstractHandler implements HttpHandler {
 
-    public GetMenuDrinks() {
+    GetMenuDrinks() {
       super();
     }
 

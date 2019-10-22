@@ -119,7 +119,7 @@ public class DatabaseProvider {
     hikariConfig.setPoolName("DatabasePool");
     hikariConfig.setMaximumPoolSize(10);
     hikariConfig.setMinimumIdle(10);
-    hikariConfig.setAutoCommit(false);
+    hikariConfig.setConnectionInitSql("SET SEARCH_PATH TO bar_hub, public");
 
     if (this.username != null) {
       hikariConfig.setUsername(username);

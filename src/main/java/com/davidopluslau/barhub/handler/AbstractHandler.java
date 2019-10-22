@@ -1,12 +1,13 @@
 package com.davidopluslau.barhub.handler;
 
-import com.davidopluslau.barhub.config.BarHubConfigProvider;
 import com.davidopluslau.barhub.db.DatabaseProvider;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.NumberSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.networknt.config.Config;
 import com.networknt.service.SingletonServiceFactory;
@@ -15,39 +16,42 @@ import com.networknt.status.exception.ApiException;
 import io.norberg.automatter.jackson.AutoMatterModule;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 /**
  * Abstract Handler.
  */
 public abstract class AbstractHandler {
-  private static final ObjectMapper objectMapper;
 
-  private static final String DEFAULT_PAGE = "1";
-  private static final String DEFAULT_PAGE_SIZE = "10";
+  private static final ObjectMapper OBJECT_MAPPER;
 
-  private final BarHubConfigProvider configProvider;
   protected final DatabaseProvider db;
 
   static {
-    objectMapper = Config.getInstance().getMapper()
+    SimpleModule module = new SimpleModule().addSerializer(NumberSerializer.instance);
+    OBJECT_MAPPER = Config.getInstance().getMapper()
         .registerModule(new JavaTimeModule())
         .registerModule(new AutoMatterModule())
+        .registerModule(module)
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
         .setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }
 
   protected AbstractHandler() {
-    configProvider = SingletonServiceFactory.getBean(BarHubConfigProvider.class);
     db = SingletonServiceFactory.getBean(DatabaseProvider.class);
   }
 
   private <T> String toJsonString(final T payload) {
     try {
-      return objectMapper.writer().writeValueAsString(payload);
+      return OBJECT_MAPPER.writer().writeValueAsString(payload);
     } catch (JsonProcessingException e) {
-      e.printStackTrace();
       throw new RuntimeException("Failed to serialize payload", e);
     }
   }
@@ -67,28 +71,30 @@ public abstract class AbstractHandler {
     exchange.getResponseSender().send(jsonString);
   }
 
-  String getQueryParameter(final HttpServerExchange exchange, final String name, final String alt) {
+  String getQueryParameter(final HttpServerExchange exchange, final String name, final String defaultValue) {
     if (exchange.getQueryParameters().containsKey(name)) {
       return exchange.getQueryParameters().get(name).getFirst();
     }
 
-    return alt;
+    return defaultValue;
   }
 
-  protected Integer getListPage(final HttpServerExchange exchange) {
-    return Integer.valueOf(getQueryParameter(exchange, "page", DEFAULT_PAGE));
+  void ensureParams(Map<String, Object> queryParameters, Collection<String> required) {
+    List<String> missingParams = new ArrayList<>();
+    for (String param : required) {
+      if (!queryParameters.containsKey(param)) {
+        missingParams.add(param);
+      }
+    }
+    if (!missingParams.isEmpty()) {
+      throw new IllegalArgumentException(
+          String.format("Missing values for required arg(s): %s", String.join(", ", missingParams)));
+    }
   }
 
-  protected Integer getListPageSize(final HttpServerExchange exchange) {
-    return Integer.valueOf(getQueryParameter(exchange, "page_size", DEFAULT_PAGE_SIZE));
-  }
-
-  protected Integer getListOffset(final HttpServerExchange exchange) {
-    return (getListPage(exchange) - 1) * getListPageSize(exchange);
-  }
-
-  protected Integer getTotalPages(final Integer totalCount, final Integer pageSize) {
-    return (int) Math.ceil(((double) totalCount / (double) pageSize));
+  static BigDecimal parseBigDecimal(String param, Map<String, Deque<String>> queryParameters) {
+    String paramValue = queryParameters.get(param).getFirst();
+    return new BigDecimal(paramValue);
   }
 }
 
