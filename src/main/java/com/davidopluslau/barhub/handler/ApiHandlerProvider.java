@@ -22,8 +22,10 @@ public class ApiHandlerProvider implements HandlerProvider {
         // Drink
         .add(Methods.GET, "/drink", new DrinkHandlers.GetMenuDrinks())
         .add(Methods.GET, "/drink/{id}", new DrinkHandlers.GetCurrent())
+        .add(Methods.POST, "/drink", new DrinkHandlers.Insert())
         .add(Methods.GET, "/component", new ComponentHandlers.GetAll())
         .add(Methods.POST, "/component", new ComponentHandlers.Insert())
+        .add(Methods.GET, "/context", new ContextHandler.Get())
         ;
   }
 
