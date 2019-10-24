@@ -164,6 +164,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  #
+  # Friend Paths
+  #
+  '/friend':
+    get:
+      summary: List all friends.
+      tags:
+      - friend
+      responses:
+        '200':
+          description: OK
+          content:
+            text/yaml:
+              schema:
+                type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
 
   schemas:

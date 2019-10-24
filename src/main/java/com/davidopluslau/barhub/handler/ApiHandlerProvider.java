@@ -26,6 +26,7 @@ public class ApiHandlerProvider implements HandlerProvider {
         .add(Methods.GET, "/component", new ComponentHandlers.GetAll())
         .add(Methods.POST, "/component", new ComponentHandlers.Insert())
         .add(Methods.GET, "/context", new ContextHandler.Get())
+        .add(Methods.GET, "/friend", new FriendHandlers.GetAll())
         ;
   }
 
