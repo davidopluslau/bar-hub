@@ -1,29 +1,28 @@
 package com.davidopluslau.barhub.db.converters;
 
 import java.sql.Date;
-import java.time.ZoneId;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 import org.jetbrains.annotations.Nullable;
 import org.jooq.Converter;
 
 /**
  * Converts Dates into Calendar dates.
  */
-public class CalendarConverter implements Converter<Date, GregorianCalendar> {
+public class CalendarConverter implements Converter<Date, LocalDate> {
 
   private static final long serialVersionUID = 1L;
 
   @Override
-  public GregorianCalendar from(@Nullable Date databaseObject) {
+  public LocalDate from(@Nullable Date databaseObject) {
     if (databaseObject == null) {
       return null;
     }
-    return GregorianCalendar.from(databaseObject.toLocalDate().atStartOfDay(ZoneId.systemDefault()));
+    return databaseObject.toLocalDate();
   }
 
   @Override
-  public Date to(@Nullable GregorianCalendar userObject) {
-    return userObject == null ? null : Date.valueOf(userObject.toZonedDateTime().toLocalDate());
+  public Date to(@Nullable LocalDate userObject) {
+    return userObject == null ? null : Date.valueOf(userObject);
   }
 
   @Override
@@ -32,7 +31,7 @@ public class CalendarConverter implements Converter<Date, GregorianCalendar> {
   }
 
   @Override
-  public Class<GregorianCalendar> toType() {
-    return GregorianCalendar.class;
+  public Class<LocalDate> toType() {
+    return LocalDate.class;
   }
 }

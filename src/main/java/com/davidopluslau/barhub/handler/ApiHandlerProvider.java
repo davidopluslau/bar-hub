@@ -23,10 +23,17 @@ public class ApiHandlerProvider implements HandlerProvider {
         .add(Methods.GET, "/drink", new DrinkHandlers.GetMenuDrinks())
         .add(Methods.GET, "/drink/{id}", new DrinkHandlers.GetCurrent())
         .add(Methods.POST, "/drink", new DrinkHandlers.Insert())
+
         .add(Methods.GET, "/component", new ComponentHandlers.GetAll())
         .add(Methods.POST, "/component", new ComponentHandlers.Insert())
-        .add(Methods.GET, "/context", new ContextHandler.Get())
+
         .add(Methods.GET, "/friend", new FriendHandlers.GetAll())
+        .add(Methods.POST, "/friend", new FriendHandlers.Insert())
+
+        .add(Methods.GET, "/order", new OrderHandlers.GetAll())
+        .add(Methods.POST, "/order", new OrderHandlers.Insert())
+
+        .add(Methods.GET, "/context", new ContextHandler.Get())
         ;
   }
 

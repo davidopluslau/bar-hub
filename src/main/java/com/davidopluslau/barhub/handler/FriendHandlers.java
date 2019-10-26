@@ -1,16 +1,18 @@
 package com.davidopluslau.barhub.handler;
 
 
+import static com.davidopluslau.barhub.db.generated.Tables.FRIEND_TABLE;
+
 import com.davidopluslau.barhub.db.generated.tables.pojos.Friend;
+import com.davidopluslau.barhub.db.generated.tables.records.FriendRecord;
 import com.davidopluslau.barhub.model.ListResults;
 import com.davidopluslau.barhub.model.ListResultsBuilder;
 import com.davidopluslau.barhub.model.RequestInfoBuilder;
+import com.networknt.body.BodyHandler;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-
 import java.util.List;
-
-import static com.davidopluslau.barhub.db.generated.Tables.FRIEND_TABLE;
+import java.util.Map;
 
 public class FriendHandlers {
 
@@ -43,31 +45,23 @@ public class FriendHandlers {
     }
   }
 
-//  public static class GetCurrent extends AbstractHandler implements HttpHandler {
-//
-//    GetCurrent() {
-//      super();
-//    }
-//
-//    @Override
-//    public void handleRequest(HttpServerExchange exchange) throws Exception {
-//
-//      final String gid = exchange.getQueryParameters().get("id").getFirst();
-//
-//      final Drink drink = db.dsl().selectFrom(DRINK_TABLE)
-//          .where(DRINK_TABLE.NAME.eq(gid))
-//          .orderBy(DRINK_TABLE.VERSION.desc())
-//          .limit(1)
-//          .fetchOneInto(Drink.class);
-//
-//      final List<DrinkComponent> drinkComponents = db.dsl().selectFrom(DRINK_COMPONENT_TABLE)
-//          .where(DRINK_COMPONENT_TABLE.DRINK_NAME.eq(drink.getName()))
-//          .and(DRINK_COMPONENT_TABLE.DRINK_VERSION.eq(drink.getVersion()))
-//          .orderBy(DRINK_COMPONENT_TABLE.POSITION.asc())
-//          .fetchInto(DrinkComponent.class);
-//      drink.getDrinkComponents().addAll(drinkComponents);
-//
-//      sendResponse(exchange, drink);
-//    }
-//  }
+  public static class Insert extends AbstractHandler implements HttpHandler {
+
+    Insert() {
+      super();
+    }
+
+    @Override
+    public void handleRequest(HttpServerExchange exchange) throws Exception {
+
+      Map<String, Object> queryParameters = (Map<String, Object>) exchange.getAttachment(BodyHandler.REQUEST_BODY);
+      ensureParams(queryParameters, List.of("name"));
+
+      final Friend friend = db.dsl().insertInto(FRIEND_TABLE)
+          .set(new FriendRecord(queryParameters.get("name").toString(), null)).returning().fetchOne()
+          .into(Friend.class);
+
+      sendResponse(exchange, friend);
+    }
+  }
 }

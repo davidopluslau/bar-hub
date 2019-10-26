@@ -14,7 +14,7 @@ import com.davidopluslau.barhub.db.generated.tables.pojos.DrinkComponent;
 import com.davidopluslau.barhub.db.generated.tables.records.DrinkComponentRecord;
 import com.davidopluslau.barhub.db.generated.tables.records.DrinkRecord;
 import com.davidopluslau.barhub.db.generated.tables.records.MenuDrinkRecord;
-import com.davidopluslau.barhub.db.pojos.Drink;
+import com.davidopluslau.barhub.db.pojos.DrinkResponse;
 import com.davidopluslau.barhub.model.ListResults;
 import com.davidopluslau.barhub.model.ListResultsBuilder;
 import com.davidopluslau.barhub.model.RequestInfoBuilder;
@@ -50,12 +50,12 @@ class DrinkHandlers {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
 
       final String currentMenuVersion = MenuUtils.getCurrentMenuVersion();
-      final List<Drink> drinks = db.dsl().select(DRINK_TABLE.fields())
+      final List<DrinkResponse> drinks = db.dsl().select(DRINK_TABLE.fields())
           .from(DRINK_TABLE)
           .join(MENU_DRINK_TABLE)
           .on(DRINK_TABLE.NAME.eq(MENU_DRINK_TABLE.DRINK_NAME))
           .where(MENU_DRINK_TABLE.MENU_VERSION.eq(currentMenuVersion))
-          .fetchInto(Drink.class);
+          .fetchInto(DrinkResponse.class);
 
       drinks.forEach( // TODO can jOOQ not select from a list of tuples?
           drink -> drink.getDrinkComponents().addAll(
@@ -67,7 +67,7 @@ class DrinkHandlers {
           )
       );
 
-      final ListResults<Drink> drinkResults = new ListResultsBuilder<Drink>()
+      final ListResults<DrinkResponse> drinkResults = new ListResultsBuilder<DrinkResponse>()
           .results(drinks)
           .info(new RequestInfoBuilder()
               .pageSize(drinks.size())
@@ -92,11 +92,11 @@ class DrinkHandlers {
 
       final String gid = exchange.getQueryParameters().get("id").getFirst();
 
-      final Drink drink = db.dsl().selectFrom(DRINK_TABLE)
+      final DrinkResponse drink = db.dsl().selectFrom(DRINK_TABLE)
           .where(DRINK_TABLE.NAME.eq(gid))
           .orderBy(DRINK_TABLE.VERSION.desc())
           .limit(1)
-          .fetchOneInto(Drink.class);
+          .fetchOneInto(DrinkResponse.class);
 
       final List<DrinkComponent> drinkComponents = db.dsl().selectFrom(DRINK_COMPONENT_TABLE)
           .where(DRINK_COMPONENT_TABLE.DRINK_NAME.eq(drink.getName()))
@@ -119,20 +119,20 @@ class DrinkHandlers {
     public void handleRequest(HttpServerExchange exchange) throws Exception {
       Map<String, Object> queryParameters = (Map<String, Object>) exchange.getAttachment(BodyHandler.REQUEST_BODY);
       ensureParams(queryParameters, List.of("name", "version", "blurb", "isPour", "position", "drinkComponents"));
-      String drinkName = (String) queryParameters.get("name");
-      String version = (String) queryParameters.get("version");
+      String drinkName = queryParameters.get("name").toString();
+      String version = queryParameters.get("version").toString();
       AtomicInteger position = new AtomicInteger();
       List<Map<String, Object>> drinkComponentArgs = (List<Map<String, Object>>) queryParameters.get("drinkComponents");
       List<DrinkComponentRecord> drinkComponents = drinkComponentArgs.stream()
           .map(drinkComponent -> {
             ensureParams(drinkComponent, List.of("name", "displayUnits", "displayUnitType"));
-            String componentName = (String) drinkComponent.get("name");
+            String componentName = drinkComponent.get("name").toString();
             Component component = db.dsl().selectFrom(COMPONENT_TABLE)
                 .where(COMPONENT_TABLE.NAME.eq(componentName))
                 .fetchOneInto(Component.class);
-            BigDecimal displayUnits = new BigDecimal((String) drinkComponent.get("displayUnits"));
-            UnitType unitType = UnitType.valueOf((String) drinkComponent.get("displayUnitType"));
-            BigDecimal mL = toMl(displayUnits, unitType);
+            BigDecimal displayUnits = new BigDecimal(drinkComponent.get("displayUnits").toString());
+            UnitType unitType = UnitType.valueOf(drinkComponent.get("displayUnitType").toString());
+            BigDecimal mL = normalizeLiquids(displayUnits, unitType);
             BigDecimal componentUnitCost = component.getUnitCost();
             BigDecimal costContribution = mL.multiply(componentUnitCost)
                 .divide(CENTS_PER_DOLLAR)
@@ -150,7 +150,7 @@ class DrinkHandlers {
       BigDecimal drinkAlcohol = drinkComponents.stream()
           .map(DrinkComponentRecord::getAlcoholContribution)
           .reduce(BigDecimal.ZERO, BigDecimal::add);
-      String blurb = (String) queryParameters.get("blurb");
+      String blurb = queryParameters.get("blurb").toString();
       boolean isPour = (boolean) queryParameters.get("isPour");
       DrinkRecord drink = new DrinkRecord(drinkName, version, drinkCost, drinkAlcohol, blurb, isPour);
 
@@ -174,12 +174,13 @@ class DrinkHandlers {
             .where(MENU_TABLE.VERSION.eq(version)).execute();
       });
 
-      sendResponse(exchange, result.get(0).into(new Drink()));
+      sendResponse(exchange, result.get(0).into(new DrinkResponse()));
     }
 
-    private BigDecimal toMl(BigDecimal displayUnits, UnitType unitType) {
+    private BigDecimal normalizeLiquids(BigDecimal displayUnits, UnitType unitType) {
       switch (unitType) {
         case mL:
+        case g:
           return displayUnits;
         case oz:
           return displayUnits.multiply(ML_PER_OUNCE).setScale(0, RoundingMode.HALF_UP);

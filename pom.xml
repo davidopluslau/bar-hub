@@ -562,7 +562,7 @@
               <!-- https://www.jooq.org/doc/3.11/manual/sql-execution/fetching/data-type-conversion/ -->
               <forcedTypes>
                 <forcedType>
-                  <userType>java.util.GregorianCalendar</userType>
+                  <userType>java.time.LocalDate</userType>
                   <converter>com.davidopluslau.barhub.db.converters.CalendarConverter</converter>
                   <expression>.*_DATE</expression>
                   <types>.*</types>
