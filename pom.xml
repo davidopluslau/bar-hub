@@ -45,7 +45,7 @@
     <versions.auto-matter>0.15.1</versions.auto-matter>
     <versions.completable-futures>0.3.2</versions.completable-futures>
     <versions.semantic-metrics>1.0.2</versions.semantic-metrics>
-    <versions.jackson>2.9.8</versions.jackson>
+    <versions.jackson>2.10.0</versions.jackson>
     <versions.caffeine>2.7.0</versions.caffeine>
     <versions.jooq>3.11.11</versions.jooq>
 
