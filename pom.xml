@@ -64,7 +64,7 @@
     <db.port>54320</db.port>
 
     <!-- dependency versions (logging) -->
-    <versions.log4j>2.11.1</versions.log4j>
+    <versions.log4j>2.13.3</versions.log4j>
     <versions.slf4j>1.7.25</versions.slf4j>
 
     <!-- dependency versions (testing) -->
