@@ -54,7 +54,7 @@
     <versions.light-rest-4j>${versions.light-4j}</versions.light-rest-4j>
     <versions.openapi-parser>${versions.light-4j}</versions.openapi-parser>
     <versions.json-schema-validator>1.0.1</versions.json-schema-validator>
-    <versions.undertow>2.0.16.Final</versions.undertow>
+    <versions.undertow>2.1.6.Final</versions.undertow>
     <versions.fastscanner>2.18.1</versions.fastscanner>
 
     <db.name>bar_hub</db.name>
