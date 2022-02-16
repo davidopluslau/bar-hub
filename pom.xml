@@ -39,7 +39,7 @@
     <jacoco.minimum-coverage>0.80</jacoco.minimum-coverage>
 
     <!-- dependency versions (application) -->
-    <versions.postgresql-connector>42.2.5</versions.postgresql-connector>
+    <versions.postgresql-connector>42.3.3</versions.postgresql-connector>
     <versions.hikaricp>3.3.0</versions.hikaricp>
     <versions.google-cloud-core>1.61.0</versions.google-cloud-core>
     <versions.auto-matter>0.15.1</versions.auto-matter>
